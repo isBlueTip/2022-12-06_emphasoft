@@ -11,7 +11,7 @@ DEBUG = os.getenv('DEBUG_FLAG', default=True)
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
