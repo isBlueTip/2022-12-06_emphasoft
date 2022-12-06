@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 SECRET_KEY = os.getenv('SECRET_KEY',
@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv('SECRET_KEY',
 
 DEBUG = os.getenv('DEBUG_FLAG', default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # AUTH_USER_MODEL = 'users.User'
 
@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3rd
     'rest_framework',
+    'djoser',
     # Own
     'users.apps.UsersConfig',
     'rooms.apps.RoomsConfig',
