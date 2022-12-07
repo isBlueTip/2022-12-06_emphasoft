@@ -4,6 +4,7 @@ from django.urls import include, path
 # from rest_framework.authtoken import views
 from rest_framework.routers import SimpleRouter
 
+from api.rooms_views import BookingViewSet, RoomViewSet
 from api.users_views import UserViewSet
 
 app_name = 'api'
@@ -11,7 +12,8 @@ app_name = 'api'
 router = SimpleRouter()
 
 router.register('users', UserViewSet, basename='user')
-# router.register('rooms', RoomViewSet, basename='room')
+router.register('rooms', RoomViewSet, basename='room')
+router.register('bookings', BookingViewSet, basename='booking')
 
 
 urlpatterns = [
