@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from rooms.models import Room, Booking
+from rooms.models import Booking, Room
 
 
 class RoomAdmin(admin.ModelAdmin):
@@ -27,15 +27,17 @@ class BookingAdmin(admin.ModelAdmin):
         'pk',
         'room',
         'guest',
-        'date_range',
+        'date_check_in',
+        'date_check_out',
     )
     list_editable = (
         'room',
         'guest',
-        'date_range',
+        'date_check_in',
+        'date_check_out',
     )
-    search_fields = ('room', 'guest', 'date_range',)
-    list_filter = ('room', 'guest', 'date_range',)
+    search_fields = ('room', 'guest', 'date_check_in', 'date_check_out',)
+    list_filter = ('room', 'guest', 'date_check_in', 'date_check_out',)
     empty_value_display = 'empty'
 
 
