@@ -24,6 +24,9 @@ class Room (models.Model):
         verbose_name='Max number of guests',
     )
 
+    class Meta:
+        ordering = ['number']
+
     def __str__(self):
         return f'{self.number} - {self.name}'
 
@@ -47,6 +50,9 @@ class Booking (models.Model):
     date_check_out = models.DateField(
         verbose_name='Check-out date'
     )
+
+    class Meta:
+        ordering = ['date_check_in']
 
     def __str__(self):
         return f'{self.room} - {self.date_check_in} : {self.date_check_out}'
