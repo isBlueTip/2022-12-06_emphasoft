@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import DateRangeField
 from users.models import User
 from django.core import validators
 from decimal import Decimal
@@ -42,9 +41,12 @@ class Booking (models.Model):
         on_delete=models.CASCADE,
         verbose_name='Guest',
     )
-    date_range = DateRangeField(
-        verbose_name='Nights range',
+    date_check_in = models.DateField(
+        verbose_name='Check-in date'
+    )
+    date_check_out = models.DateField(
+        verbose_name='Check-out date'
     )
 
     def __str__(self):
-        return f'{self.room} - {self.date_range}'
+        return f'{self.room} - {self.date_check_in} : {self.date_check_out}'
