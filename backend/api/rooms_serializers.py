@@ -1,11 +1,12 @@
 import logging
-
+from collections import namedtuple
 from datetime import date
 
-from rest_framework import serializers, status
-from rest_framework.response import Response
-from rooms.models import Room, Booking
-from collections import namedtuple
+from rest_framework import serializers
+
+from api.users_serializers import UserSerializer
+from rooms.models import Booking, Room
+
 Range = namedtuple('Range', ['start', 'end'])
 
 logger = logging.getLogger('logger')
@@ -24,9 +25,14 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    guest = UserSerializer(
+        read_only=True, default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = Booking
         fields = [
+            'pk',
             'room',
             'guest',
             'date_check_in',
@@ -54,10 +60,6 @@ class BookingSerializer(serializers.ModelSerializer):
             r2 = Range(requested_check_in, requested_check_out)
             latest_start = max(r1.start, r2.start)
             earliest_end = min(r1.end, r2.end)
-            logger.debug(r1.start)
-            logger.debug(r1.end)
-            logger.debug(r2.start)
-            logger.debug(r2.end)
             delta = (latest_start - earliest_end).days
             if delta < 0:
                 raise serializers.ValidationError(
@@ -65,7 +67,7 @@ class BookingSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = self.context.get('request').user
+        user = self.context.get('request').user  # add user from context
         room = validated_data['room']
         requested_check_in = validated_data['date_check_in']
         requested_check_out = validated_data['date_check_out']
