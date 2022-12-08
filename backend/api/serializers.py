@@ -1,6 +1,7 @@
 import logging
 from collections import namedtuple
 from datetime import date
+from django.contrib.auth.models import User as user_type
 
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -41,17 +42,16 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
         }
 
-    def create(self, validated_data: dict) -> User:
+    def create(self, validated_data: dict) -> user_type:
         user = User(
             email=validated_data.get('email'),
             username=validated_data.get('username'),
-            # first_name=validated_data.get('first_name'),
-            # last_name=validated_data.get('last_name'),
+            first_name=validated_data.get('first_name'),
+            last_name=validated_data.get('last_name'),
         )
         user.set_password(validated_data['password'])
         user.save()
-        logger.debug(type(user))
-        # return user
+        return user
 
 
 class PasswordSerializer(serializers.ModelSerializer):
@@ -66,6 +66,8 @@ class PasswordSerializer(serializers.ModelSerializer):
         ]
 
     def validate_current_password(self, value):
+        logger.debug(value)
+        logger.debug(type(value))
         user = self.context['request'].user
         if not user.check_password(value):
             raise serializers.ValidationError(
@@ -74,6 +76,8 @@ class PasswordSerializer(serializers.ModelSerializer):
         return value
 
     def validate_new_password(self, value):
+        logger.debug(value)
+        logger.debug(type(value))
         user = self.context['request'].user
         validate_password(value, user)
         return value

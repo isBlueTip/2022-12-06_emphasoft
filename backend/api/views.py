@@ -33,14 +33,15 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 class BookingViewSet(viewsets.ModelViewSet):
+
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminOrCreate]
+
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
             return Booking.objects.all()
         return Booking.objects.filter(guest=user)
-
-    serializer_class = BookingSerializer
-    permission_classes = [IsAdminOrCreate]
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -81,7 +82,7 @@ class UserViewSet(viewsets.ModelViewSet):
         url_path='set_password',
         name='Change current user password',
     )
-    def set_user_password(self, request):
+    def set_user_password(self, request) -> Response:
         user = self.request.user
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)

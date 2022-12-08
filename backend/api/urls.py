@@ -16,7 +16,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path('', include(router.urls)),
     path(
-        'docs/swagger-ui',
+        'docs/swagger/',
         SpectacularSwaggerView.as_view(url_name='schema'),
         name='swagger-ui',
     ),
