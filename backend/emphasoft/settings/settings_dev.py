@@ -4,8 +4,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-SECRET_KEY = os.getenv('SECRET_KEY',
-                       default='p&l%slhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY', default='p&l%slhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
+)
 
 DEBUG = os.getenv('DEBUG_FLAG', default=True)
 
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd
     'django_filters',
+    'drf_spectacular',
     'rest_framework.authtoken',
     'rest_framework',
     'djoser',
@@ -66,16 +68,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'emphasoft.wsgi.application'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'ENGINE': os.getenv(
+            'DB_ENGINE', default='django.db.backends.postgresql'
+        ),
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='root'),
@@ -121,12 +118,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 
@@ -162,9 +162,14 @@ LOGGING = {
         },
     },
     'loggers': {
-        'logger': {
-            'handlers': ['file'],
-            'level': 'DEBUG'
-        },
-    }
+        'logger': {'handlers': ['file'], 'level': 'DEBUG'},
+    },
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Emphasoft booking service',
+    'DESCRIPTION': 'Test assignment from Emphasoft for room booking',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
