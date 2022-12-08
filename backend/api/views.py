@@ -1,21 +1,20 @@
 import logging
 
-from api.filters import RoomFilter
-from api.permissions import IsAdminOrReadOnly  # , IsAuthor
-from api.permissions import (
-    IsAdminOrCreate,
-    IsAuthenticatedOrReadOnlyOrRegister,
-)
-from api.serializers import BookingSerializer, RoomSerializer
-from api.serializers import (
-    CreateUserSerializer,
-    # PasswordSerializer,
-    UserSerializer,
-)
+from django.db.models.query import QuerySet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
+
+from api.filters import RoomFilter
+from api.permissions import IsAdminOrCreate, IsAdminOrReadOnly
+from api.serializers import (
+    BookingSerializer,
+    CreateUserSerializer,
+    RoomSerializer,
+    UserSerializer,
+)
 from rooms.models import Booking, Room
 from users.models import User
 
@@ -28,14 +27,15 @@ class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     permission_classes = [IsAdminOrReadOnly]
     filterset_class = RoomFilter
+    lookup_field = 'number'
 
 
 class BookingViewSet(viewsets.ModelViewSet):
 
     serializer_class = BookingSerializer
-    permission_classes = [IsAdminOrCreate]
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         user = self.request.user
         if user.is_staff:
             return Booking.objects.all()
@@ -43,7 +43,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type(UserSerializer):
         if self.action == 'create':
             return CreateUserSerializer
         return UserSerializer
@@ -51,7 +51,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsAdminOrCreate]
 
-    @action(
+    @action(  # user info about self
         detail=False,
         methods=[
             'get',
@@ -63,7 +63,7 @@ class UserViewSet(viewsets.ModelViewSet):
         url_name='me',
         name='View current user details',
     )
-    def view_user_info(self, request):
+    def view_user_info(self, request: Request) -> Response:
         user = self.request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
