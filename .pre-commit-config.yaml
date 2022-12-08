@@ -4,7 +4,7 @@ repos:
     rev: 22.10.0
     hooks:
       - id: black
-        args: [--skip-string-normalization, --line-length=80]
+        args: [--skip-string-normalization, --line-length=79]
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
