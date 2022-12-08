@@ -1,10 +1,11 @@
-from django.db import models
-from users.models import User
-from django.core import validators
 from decimal import Decimal
 
+from django.core import validators
+from django.db import models
+from users.models import User
 
-class Room (models.Model):
+
+class Room(models.Model):
     number = models.PositiveIntegerField(
         unique=True,
         verbose_name='Room number',
@@ -15,12 +16,14 @@ class Room (models.Model):
         verbose_name='Room name',
     )
     price = models.DecimalField(
+        db_index=True,
         max_digits=16,
         decimal_places=2,
-        validators=[validators.MinValueValidator(Decimal('0'))],  # TODO is it necessary?
+        validators=[validators.MinValueValidator(Decimal('0'))],
         verbose_name='Price per night',
     )
     capacity = models.PositiveIntegerField(
+        db_index=True,
         verbose_name='Max number of guests',
     )
 
@@ -31,7 +34,7 @@ class Room (models.Model):
         return f'{self.number} - {self.name}'
 
 
-class Booking (models.Model):
+class Booking(models.Model):
     room = models.ForeignKey(
         Room,
         related_name='bookings',
@@ -45,10 +48,10 @@ class Booking (models.Model):
         verbose_name='Guest',
     )
     date_check_in = models.DateField(
-        verbose_name='Check-in date'
+        db_index=True, verbose_name='Check-in date'
     )
     date_check_out = models.DateField(
-        verbose_name='Check-out date'
+        db_index=True, verbose_name='Check-out date'
     )
 
     class Meta:
