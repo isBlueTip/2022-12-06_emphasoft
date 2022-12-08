@@ -35,7 +35,7 @@ DEBUG=False
 
 ## Документация API
 
-доступна по адресу http://localhost/api/v1/schema/swagger-ui/ при развёрнутом проекте
+доступна по адресу http://localhost/api/docs/redoc/ и http://localhost/api/docs/swagger/ при развёрнутом проекте
 
 ## Ключи поиска и сортировки комнат
 
