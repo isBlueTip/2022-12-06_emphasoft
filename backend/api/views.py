@@ -7,8 +7,8 @@ from api.permissions import (
     IsAdminOrCreate,
     IsAuthenticatedOrReadOnlyOrRegister,
 )
-from api.rooms_serializers import BookingSerializer, RoomSerializer
-from api.users_serializers import (
+from api.serializers import BookingSerializer, RoomSerializer
+from api.serializers import (
     CreateUserSerializer,
     PasswordSerializer,
     UserSerializer,
