@@ -2,7 +2,6 @@ import logging
 from collections import namedtuple
 from datetime import date
 
-# from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from rooms.models import Booking, Room
@@ -68,22 +67,30 @@ class BookingSerializer(serializers.ModelSerializer):
     guest = UserSerializer(
         read_only=True, default=serializers.CurrentUserDefault()
     )
+    requested_room = serializers.IntegerField(write_only=True)
+    room = serializers.IntegerField(source='room.number', read_only=True)
 
     class Meta:
         model = Booking
         fields = [
             'pk',
+            'requested_room',
             'room',
             'guest',
             'date_check_in',
             'date_check_out',
         ]
 
-        read_only_fields = ['guest']
+        read_only_fields = ['guest', 'room']
 
     def validate(self, data: dict) -> dict:
         requested_check_in = data.get('date_check_in')
         requested_check_out = data.get('date_check_out')
+        requested_room = data.get('requested_room')
+        if not Room.objects.filter(number=requested_room).exists():
+            raise serializers.ValidationError(
+                f'There is not room with number {requested_room}'
+            )
         if requested_check_in < date.today():
             raise serializers.ValidationError(
                 'You can\'t book earlier than today'
@@ -95,7 +102,7 @@ class BookingSerializer(serializers.ModelSerializer):
             )
         elif requested_check_in == requested_check_out:
             raise serializers.ValidationError('Select at least one night')
-        bookings = Booking.objects.filter(room=data['room'])
+        bookings = Booking.objects.filter(room__number=requested_room)
 
         for booking in bookings:  # check if requested dates are available
             r1 = Range(booking.date_check_in, booking.date_check_out)
@@ -111,9 +118,10 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict) -> Booking:
         user = self.context.get('request').user  # add user from context
-        room = validated_data['room']
-        requested_check_in = validated_data['date_check_in']
-        requested_check_out = validated_data['date_check_out']
+        room = validated_data.get('requested_room')
+        room = Room.objects.get(number=room)
+        requested_check_in = validated_data.get('date_check_in')
+        requested_check_out = validated_data.get('date_check_out')
         booking = Booking.objects.create(
             room=room,
             guest=user,
