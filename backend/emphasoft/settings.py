@@ -13,6 +13,8 @@ ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     'http://*.localhost:8000',
+    'http://*.localhost',
+    'http://127.0.0.1',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -78,7 +80,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='root'),
-        'HOST': 'localhost',
+        'HOST': os.getenv('DB_HOST', default='root'),
         'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
@@ -109,8 +111,10 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
