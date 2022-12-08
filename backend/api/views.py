@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from datetime import date, datetime
 
 from api.filters import RoomFilter
 from api.permissions import IsAdminOrReadOnly  # , IsAuthor
@@ -13,8 +14,7 @@ from api.serializers import (
     PasswordSerializer,
     UserSerializer,
 )
-from django.db.models import Q
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, serializers
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -30,44 +30,6 @@ class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     permission_classes = [IsAdminOrReadOnly]
     filterset_class = RoomFilter
-    lookup_url_kwargs = ['checkin_date', 'checkout_date']
-
-    def list(self, request, *args, **kwargs):
-        checkin_date = request.query_params.get('checkin_date')
-        checkout_date = request.query_params.get('checkout_date')
-        if checkin_date and checkout_date:
-            # logger.debug(checkin_date)
-            queryset = Room.objects.exclude(
-                Q(
-                    bookings__date_check_in__lte=checkin_date,
-                    bookings__date_check_out__gt=checkin_date,
-                )
-                | Q(
-                    bookings__date_check_in__lt=checkout_date,
-                    bookings__date_check_out__gte=checkout_date,
-                )
-            )
-            # logger.debug(queryset)
-        elif checkin_date:
-            return Response(
-                data='You have to provide checkout_date',
-                status=HTTPStatus.BAD_REQUEST,
-            )
-        elif checkout_date:
-            return Response(
-                data='You have to provide checkin_date',
-                status=HTTPStatus.BAD_REQUEST,
-            )
-        else:
-            queryset = Room.objects.all()
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
 
 class BookingViewSet(viewsets.ModelViewSet):
@@ -77,7 +39,6 @@ class BookingViewSet(viewsets.ModelViewSet):
             return Booking.objects.all()
         return Booking.objects.filter(guest=user)
 
-    pagination_class = None  # TODO which pagination?
     serializer_class = BookingSerializer
     permission_classes = [IsAdminOrCreate]
 
