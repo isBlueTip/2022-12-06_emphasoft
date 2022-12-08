@@ -1,13 +1,22 @@
-from django_paranoid.models import ParanoidModel
-
-# from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django_paranoid.models import ParanoidModel
 
-from django.contrib.auth import get_user_model
 
-
-# class User(AbstractUser, ParanoidModel):
-#     field = models.CharField(max_length=20)
-
-User = get_user_model()
+class User(AbstractUser, ParanoidModel):
+    first_name = models.CharField(
+        'first name',
+        max_length=150,
+        blank=True,
+        null=True,
+    )
+    last_name = models.CharField(
+        'last name',
+        max_length=150,
+        blank=True,
+        null=True,
+    )
+    email = models.EmailField(
+        'email address',
+        blank=True,
+    )
