@@ -44,11 +44,13 @@ class RoomViewSet(viewsets.ModelViewSet):
             # logger.debug(queryset)
         elif checkin_date:
             return Response(
-                data='You have to provide checkout_date', status=HTTPStatus.BAD_REQUEST
+                data='You have to provide checkout_date',
+                status=HTTPStatus.BAD_REQUEST,
             )
         elif checkout_date:
             return Response(
-                data='You have to provide checkin_date', status=HTTPStatus.BAD_REQUEST
+                data='You have to provide checkin_date',
+                status=HTTPStatus.BAD_REQUEST,
             )
         else:
             queryset = Room.objects.all()
