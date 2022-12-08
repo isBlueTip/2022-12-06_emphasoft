@@ -1,5 +1,4 @@
-from api.rooms_views import BookingViewSet, RoomViewSet
-from api.users_views import UserViewSet
+from api.views import BookingViewSet, RoomViewSet, UserViewSet
 from django.urls import include, path
 from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import SimpleRouter
