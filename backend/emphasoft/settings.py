@@ -1,8 +1,7 @@
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv(
     'SECRET_KEY', default='p&l%slhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
@@ -10,11 +9,13 @@ SECRET_KEY = os.getenv(
 
 DEBUG = os.getenv('DEBUG_FLAG', default=True)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     'http://*.localhost:8000',
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd
     'django_filters',
+    'django_paranoid',
     'drf_spectacular',
     'rest_framework.authtoken',
     'rest_framework',
@@ -172,4 +174,5 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Test assignment from Emphasoft for room booking',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
 }
