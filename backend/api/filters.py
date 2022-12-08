@@ -1,13 +1,12 @@
 import logging
-
-from django_filters import rest_framework as filters
-from rooms.models import Room
-from rest_framework import serializers
 from datetime import date
 
-# from django_filters.rest_framework import BooleanWidget
-
 from django.db.models import Q
+from django.db.models.query import QuerySet
+from django_filters import rest_framework as filters
+from rest_framework import serializers
+
+from rooms.models import Room
 
 logger = logging.getLogger('logger')
 
@@ -15,13 +14,13 @@ logger = logging.getLogger('logger')
 class RoomFilter(filters.FilterSet):
 
     price = filters.NumberFilter()
-    min_price = filters.NumberFilter(field_name='price', lookup_expr='gt')
-    max_price = filters.NumberFilter(field_name='price', lookup_expr='lt')
+    price_min = filters.NumberFilter(field_name='price', lookup_expr='gt')
+    price_max = filters.NumberFilter(field_name='price', lookup_expr='lt')
     capacity = filters.NumberFilter()
-    min_capacity = filters.NumberFilter(
+    capacity_min = filters.NumberFilter(
         field_name='capacity', lookup_expr='gt'
     )
-    max_capacity = filters.NumberFilter(
+    capacity_max = filters.NumberFilter(
         field_name='capacity', lookup_expr='lt'
     )
 
@@ -34,8 +33,9 @@ class RoomFilter(filters.FilterSet):
 
     date_range = filters.DateFromToRangeFilter(method='filter_requested_dates')
 
-    def filter_requested_dates(self, queryset, name, value):
-        logger.debug(value)
+    def filter_requested_dates(
+        self, queryset: QuerySet, name: str, value: slice
+    ) -> QuerySet:
         try:
             checkin_date = value.start.date()
             checkout_date = value.stop.date()
