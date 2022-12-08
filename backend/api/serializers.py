@@ -1,9 +1,14 @@
 import logging
+from collections import namedtuple
+from datetime import date
 
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
+from rooms.models import Booking, Room
 from users.models import User
+
+Range = namedtuple('Range', ['start', 'end'])
 
 logger = logging.getLogger('logger')
 
@@ -36,16 +41,17 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
         }
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> User:
         user = User(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
+            email=validated_data.get('email'),
+            username=validated_data.get('username'),
+            # first_name=validated_data.get('first_name'),
+            # last_name=validated_data.get('last_name'),
         )
         user.set_password(validated_data['password'])
         user.save()
-        return user
+        logger.debug(type(user))
+        # return user
 
 
 class PasswordSerializer(serializers.ModelSerializer):
@@ -71,20 +77,6 @@ class PasswordSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validate_password(value, user)
         return value
-
-
-import logging
-from collections import namedtuple
-from datetime import date
-
-from rest_framework import serializers
-
-# from api.users_serializers import UserSerializer
-from rooms.models import Booking, Room
-
-Range = namedtuple('Range', ['start', 'end'])
-
-logger = logging.getLogger('logger')
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -123,10 +115,12 @@ class BookingSerializer(serializers.ModelSerializer):
                 'You can\'t book earlier than today'
             )
 
-        if requested_check_in >= requested_check_out:
+        if requested_check_in > requested_check_out:
             raise serializers.ValidationError(
                 'Check-in date must be earlier than check-out date'
             )
+        elif requested_check_in == requested_check_out:
+            raise serializers.ValidationError('Select at least one night')
         bookings = Booking.objects.filter(room=data['room'])
 
         for booking in bookings:  # check if requested dates are available
