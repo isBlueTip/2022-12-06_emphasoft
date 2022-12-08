@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.core import validators
 from django.db import models
+
 from users.models import User
 
 
@@ -30,7 +31,7 @@ class Room(models.Model):
     class Meta:
         ordering = ['number']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.number} - {self.name}'
 
 
@@ -57,5 +58,5 @@ class Booking(models.Model):
     class Meta:
         ordering = ['date_check_in']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.room} - {self.date_check_in} : {self.date_check_out}'

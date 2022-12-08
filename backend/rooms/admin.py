@@ -17,8 +17,15 @@ class RoomAdmin(admin.ModelAdmin):
         'price',
         'capacity',
     )
-    search_fields = ('name', 'number', 'capacity',)
-    list_filter = ('price', 'capacity',)
+    search_fields = (
+        'name',
+        'number',
+        'capacity',
+    )
+    list_filter = (
+        'price',
+        'capacity',
+    )
     empty_value_display = 'empty'
 
 
@@ -36,15 +43,20 @@ class BookingAdmin(admin.ModelAdmin):
         'date_check_in',
         'date_check_out',
     )
-    search_fields = ('room', 'guest', 'date_check_in', 'date_check_out',)
-    list_filter = ('room', 'guest', 'date_check_in', 'date_check_out',)
+    search_fields = (
+        'room',
+        'guest',
+        'date_check_in',
+        'date_check_out',
+    )
+    list_filter = (
+        'room',
+        'guest',
+        'date_check_in',
+        'date_check_out',
+    )
     empty_value_display = 'empty'
 
-
-# class IngredientInline(admin.TabularInline):
-#
-#     model = IngredientQuantity
-#     extra = 1
 
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Booking, BookingAdmin)
