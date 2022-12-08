@@ -1,9 +1,8 @@
 import logging
 from collections import namedtuple
 from datetime import date
-from django.contrib.auth.models import User as user_type
 
-from django.contrib.auth.password_validation import validate_password
+# from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from rooms.models import Booking, Room
@@ -42,7 +41,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
         }
 
-    def create(self, validated_data: dict) -> user_type:
+    def create(self, validated_data: dict) -> User:
         user = User(
             email=validated_data.get('email'),
             username=validated_data.get('username'),
@@ -52,35 +51,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-
-
-class PasswordSerializer(serializers.ModelSerializer):
-    current_password = serializers.CharField(write_only=True, required=True)
-    new_password = serializers.CharField(write_only=True, required=True)
-
-    class Meta:
-        model = User
-        fields = [
-            'current_password',
-            'new_password',
-        ]
-
-    def validate_current_password(self, value):
-        logger.debug(value)
-        logger.debug(type(value))
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError(
-                {'current_password': 'current password is incorrect'}
-            )
-        return value
-
-    def validate_new_password(self, value):
-        logger.debug(value)
-        logger.debug(type(value))
-        user = self.context['request'].user
-        validate_password(value, user)
-        return value
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -111,7 +81,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
         read_only_fields = ['guest']
 
-    def validate(self, data):
+    def validate(self, data: dict) -> dict:
         requested_check_in = data.get('date_check_in')
         requested_check_out = data.get('date_check_out')
         if requested_check_in < date.today():
@@ -139,7 +109,7 @@ class BookingSerializer(serializers.ModelSerializer):
                 )
         return data
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Booking:
         user = self.context.get('request').user  # add user from context
         room = validated_data['room']
         requested_check_in = validated_data['date_check_in']

@@ -1,6 +1,4 @@
 import logging
-from http import HTTPStatus
-from datetime import date, datetime
 
 from api.filters import RoomFilter
 from api.permissions import IsAdminOrReadOnly  # , IsAuthor
@@ -11,10 +9,10 @@ from api.permissions import (
 from api.serializers import BookingSerializer, RoomSerializer
 from api.serializers import (
     CreateUserSerializer,
-    PasswordSerializer,
+    # PasswordSerializer,
     UserSerializer,
 )
-from rest_framework import status, viewsets, serializers
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -51,7 +49,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserSerializer
 
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnlyOrRegister]
+    permission_classes = [IsAdminOrCreate]
 
     @action(
         detail=False,
@@ -69,23 +67,3 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @action(
-        detail=False,
-        methods=[
-            'post',
-        ],
-        permission_classes=[
-            IsAuthenticated,
-        ],
-        serializer_class=PasswordSerializer,
-        url_path='set_password',
-        name='Change current user password',
-    )
-    def set_user_password(self, request) -> Response:
-        user = self.request.user
-        serializer = self.get_serializer(data=self.request.data)
-        serializer.is_valid(raise_exception=True)
-        user.set_password(serializer.validated_data['new_password'])
-        user.save()
-        return Response(status=status.HTTP_201_CREATED)
