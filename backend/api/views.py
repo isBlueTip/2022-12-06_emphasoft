@@ -1,12 +1,5 @@
 import logging
 
-from django.db.models.query import QuerySet
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
-from rest_framework.response import Response
-
 from api.filters import RoomFilter
 from api.permissions import IsAdminOrCreate, IsAdminOrReadOnly
 from api.serializers import (
@@ -15,12 +8,33 @@ from api.serializers import (
     RoomSerializer,
     UserSerializer,
 )
+from django.db.models.query import QuerySet
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    extend_schema,
+    extend_schema_view,
+)
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rooms.models import Booking, Room
 from users.models import User
 
 logger = logging.getLogger('logger')
 
 
+@extend_schema(tags=['Rooms'])
+@extend_schema_view(
+    list=extend_schema(
+        summary='List all the rooms',
+    ),
+    retrieve=extend_schema(
+        summary='Retrieve a room',
+    ),
+)
 class RoomViewSet(viewsets.ModelViewSet):
 
     queryset = Room.objects.all()
@@ -30,6 +44,27 @@ class RoomViewSet(viewsets.ModelViewSet):
     lookup_field = 'number'
 
 
+@extend_schema(tags=['Bookings'])
+@extend_schema_view(
+    list=extend_schema(
+        summary='List all the bookings',
+    ),
+    create=extend_schema(
+        summary='Make a new reservation',
+    ),
+    retrieve=extend_schema(
+        summary='Retrieve booking',
+    ),
+    update=extend_schema(
+        summary='Update booking info',
+    ),
+    partial_update=extend_schema(
+        summary='Partially update booking info',
+    ),
+    destroy=extend_schema(
+        summary='Delete booking',
+    ),
+)
 class BookingViewSet(viewsets.ModelViewSet):
 
     serializer_class = BookingSerializer
@@ -42,6 +77,27 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Booking.objects.filter(guest=user)
 
 
+@extend_schema(tags=['Users'])
+@extend_schema_view(
+    list=extend_schema(
+        summary='List all the users',
+    ),
+    create=extend_schema(
+        summary='Register new user',
+    ),
+    retrieve=extend_schema(
+        summary='Retrieve user',
+    ),
+    update=extend_schema(
+        summary='Update user info',
+    ),
+    partial_update=extend_schema(
+        summary='Partially update user info',
+    ),
+    destroy=extend_schema(
+        summary='Delete user',
+    ),
+)
 class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self) -> type(UserSerializer):
         if self.action == 'create':
@@ -51,6 +107,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsAdminOrCreate]
 
+    @extend_schema(tags=['Users'], summary='Info about current user')
     @action(  # user info about self
         detail=False,
         methods=[
