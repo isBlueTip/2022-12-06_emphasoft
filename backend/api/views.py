@@ -10,8 +10,6 @@ from api.serializers import (
 )
 from django.db.models.query import QuerySet
 from drf_spectacular.utils import (
-    OpenApiExample,
-    OpenApiParameter,
     extend_schema,
     extend_schema_view,
 )
@@ -39,7 +37,6 @@ class RoomViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
-    permission_classes = [IsAuthenticated]
     filterset_class = RoomFilter
     lookup_field = 'number'
 
