@@ -3,11 +3,14 @@ from decimal import Decimal
 from django.core import validators
 from django.db import models
 
+from django_paranoid.models import ParanoidModel
+
 from users.models import User
 
 
-class Room(models.Model):
+class Room(ParanoidModel):
     number = models.PositiveIntegerField(
+        db_index=True,
         unique=True,
         verbose_name='Room number',
     )
@@ -35,17 +38,19 @@ class Room(models.Model):
         return f'{self.number} - {self.name}'
 
 
-class Booking(models.Model):
+class Booking(ParanoidModel):
     room = models.ForeignKey(
         Room,
         related_name='bookings',
-        on_delete=models.CASCADE,
+        # since room instance is paranoid
+        on_delete=models.PROTECT,
         verbose_name='Room',
     )
     guest = models.ForeignKey(
         User,
         related_name='bookings',
-        on_delete=models.CASCADE,
+        # since user instance is paranoid
+        on_delete=models.PROTECT,
         verbose_name='Guest',
     )
     date_check_in = models.DateField(
