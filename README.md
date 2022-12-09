@@ -24,7 +24,7 @@ docker exec -it 12_06_emphasoft_web_1 python3 manage.py loaddata dump.json
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=postgres
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=pass
+POSTGRES_PASSWORD=root
 DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=p&l%slhtyn^##a1)ilz@4zqj=rq&agdol^##zglmlkmklmewf16w5165^(*U)(&%3dkm9(vs
