@@ -1,7 +1,7 @@
 import logging
 
 from api.filters import RoomFilter
-from api.permissions import IsAdminOrCreate, IsAdminOrReadOnly
+from api.permissions import IsAdminOrCreate
 from api.serializers import (
     BookingSerializer,
     CreateUserSerializer,
@@ -35,11 +35,11 @@ logger = logging.getLogger('logger')
         summary='Retrieve a room',
     ),
 )
-class RoomViewSet(viewsets.ModelViewSet):
+class RoomViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticated]
     filterset_class = RoomFilter
     lookup_field = 'number'
 
@@ -49,20 +49,8 @@ class RoomViewSet(viewsets.ModelViewSet):
     list=extend_schema(
         summary='List all the bookings',
     ),
-    create=extend_schema(
-        summary='Make a new reservation',
-    ),
     retrieve=extend_schema(
         summary='Retrieve booking',
-    ),
-    update=extend_schema(
-        summary='Update booking info',
-    ),
-    partial_update=extend_schema(
-        summary='Partially update booking info',
-    ),
-    destroy=extend_schema(
-        summary='Delete booking',
     ),
 )
 class BookingViewSet(viewsets.ModelViewSet):
